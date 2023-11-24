@@ -6,49 +6,78 @@
     <title>Calculadora</title>
     <link rel="stylesheet" href="css/estilo.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    
-
 </head>
 <body>
     <div class="container">
         <form class="card" onsubmit="calcularFrecuencia(event)">
-            <h2 class="pb-2">¿Cada cuanto deberia cambiar las pezoneras?</h2>
+            <h2 class="pb-2">¿Cada cuanto debería cambiar las pezoneras?</h2>
             <label for="cantidadVacas" class="pt-2">Vacas totales</label>
             <input type="number" id="cantidadVacas" name="cantidadVacas" required><br>
             
-            <label for="cantidadOrdeños">Ordeños por dia</label>
+            <label for="cantidadOrdeños">Ordeños por día</label>
             <input type="number" id="cantidadOrdeños" name="cantidadOrdeños" required><br>
             
-            <label for="cantidadEquipos">Numero de bajadas</label>
+            <label for="cantidadEquipos">Número de bajadas</label>
             <input type="number" id="cantidadEquipos" name="cantidadEquipos" required><br>
+
+            <label for="fechaCambio">Fecha de último cambio</label>
+            <input type="date" id="fechaCambio" name="fechaCambio" required><br>
     
             <button type="submit">Calcular Frecuencia</button>
         </form>
     </div>
     
-    <div id="resultado" class="container-fluid text-white fs-2"></div>
-
+    <div id="frecuencia" class="container-fluid text-white fs-2"></div>
+    <div id="proximoCambio" class="container-fluid text-white fs-2"></div>
 
     <script>
+        const resultados = [];
+
+        function calcularFrecuenciaCambio(cantidadVacas, cantidadOrdeños, cantidadEquipos, fechaCambio) {
+            const frecuenciaOrdeños = 2500;
+            const totalOrdeños = (cantidadVacas * cantidadOrdeños) / cantidadEquipos;
+            const frecuenciaDias = Math.round(frecuenciaOrdeños / totalOrdeños);
+            
+            // Obtener la fecha del último cambio
+            const fechaUltimoCambio = new Date(fechaCambio);
+
+            // Sumar la frecuencia de días a la fecha del último cambio
+            fechaUltimoCambio.setDate(fechaUltimoCambio.getDate() + frecuenciaDias);
+
+            // Almacenar el resultado en el array
+            resultados.push({
+                cantidadVacas,
+                cantidadOrdeños,
+                cantidadEquipos,
+                fechaUltimoCambio
+            });
+
+            // Devolver la frecuencia de cambio y la próxima fecha de cambio
+            return { frecuenciaDias, fechaProximoCambio: fechaUltimoCambio.toDateString() };
+        }
+
+        function mostrarResultado(frecuenciaDias, fechaProximoCambio) {
+            document.getElementById("frecuencia").innerHTML = `Frecuencia de cambio: ${frecuenciaDias} días`;
+            document.getElementById("proximoCambio").innerHTML = `Próximo cambio de pezoneras: ${fechaProximoCambio}`;
+        }
+
         function calcularFrecuencia(event) {
-    event.preventDefault(); 
+            event.preventDefault(); 
 
-    const cantidadVacas = parseInt(document.getElementById("cantidadVacas").value);
-    const cantidadOrdeños = parseInt(document.getElementById("cantidadOrdeños").value);
-    const cantidadEquipos = parseInt(document.getElementById("cantidadEquipos").value);
+            const cantidadVacas = parseInt(document.getElementById("cantidadVacas").value);
+            const cantidadOrdeños = parseInt(document.getElementById("cantidadOrdeños").value);
+            const cantidadEquipos = parseInt(document.getElementById("cantidadEquipos").value);
+            const fechaCambio = document.getElementById("fechaCambio").value;
 
-    if (!isNaN(cantidadVacas) && !isNaN(cantidadOrdeños) && !isNaN(cantidadEquipos)) {
-        const frecuenciaDias = calcularFrecuenciaCambio(cantidadVacas, cantidadOrdeños, cantidadEquipos);
-
-        // Mostrar el resultado en el elemento con id "resultado"
-        document.getElementById("resultado").innerHTML = `Cada ${frecuenciaDias} días.`;
-    } else {
-        alert("Por favor, ingresa números válidos en todos los campos.");
-    }
-}
-
+            if (!isNaN(cantidadVacas) && !isNaN(cantidadOrdeños) && !isNaN(cantidadEquipos) && fechaCambio) {
+                const { frecuenciaDias, fechaProximoCambio } = calcularFrecuenciaCambio(cantidadVacas, cantidadOrdeños, cantidadEquipos, fechaCambio);
+                mostrarResultado(frecuenciaDias, fechaProximoCambio);
+            } else {
+                alert("Por favor, ingresa valores válidos en todos los campos.");
+            }
+        }
     </script>
-    <script src="JS/JS.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 </html>
+
